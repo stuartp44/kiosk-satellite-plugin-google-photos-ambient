@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "google-photos-ambient",
+  "name": "Google Photos Ambient",
+  "version": "0.1.0",
+  "apiVersion": 1,
+  "minAndroidSdk": 24,
+  "entryClass": "com.stuartp44.photos.GooglePhotosPlugin",
+  "description": "Show photos selected in Google Photos as a native Kiosk Satellite screensaver using the Google Photos Ambient API.",
+  "author": "Stuart Pearson",
+  "license": "Apache-2.0",
+  "capabilities": ["screensaver"],
+  "settings": [
+    {"key":"clientId","type":"string","title":"Google OAuth client ID","default":"","group":"Google account","description":"Use a TVs and Limited Input devices OAuth client with the Ambient API enabled."},
+    {"key":"clientSecret","type":"secret","title":"Google OAuth client secret","default":"","group":"Google account"},
+    {"key":"displayName","type":"string","title":"Name in Google Photos","default":"Kiosk Satellite","group":"Google account","description":"Used when pairing a new device. Disconnect and pair again to change the registered name."},
+    {"key":"slideSeconds","type":"number","title":"Seconds per photo","default":30,"min":10,"max":300,"step":5,"group":"Slideshow"},
+    {"key":"fit","type":"select","title":"Photo sizing","default":"Fit","options":["Fit","Fill"],"group":"Slideshow"},
+    {"key":"refreshToken","type":"secret","title":"Saved refresh token (managed by plugin)","default":"","group":"Saved connection"},
+    {"key":"deviceId","type":"secret","title":"Saved device ID (managed by plugin)","default":"","group":"Saved connection"},
+    {"key":"requestId","type":"secret","title":"Saved pairing request ID (managed by plugin)","default":"","group":"Saved connection"},
+    {"key":"boundClientId","type":"secret","title":"Saved OAuth client binding (managed by plugin)","default":"","group":"Saved connection"}
+  ],
+  "buttons": [
+    {"id":"connect","title":"Connect Google Photos","label":"Sign in","group":"Google account","description":"Displays a Google verification URL and code. Keep this page open while signing in and selecting photos."},
+    {"id":"disconnect","title":"Disconnect Google Photos","label":"Disconnect","group":"Google account","confirm":{"title":"Disconnect Google Photos?","message":"Remove this Ambient device from Google Photos and erase its saved local connection?","confirmLabel":"Disconnect"}},
+    {"id":"forget","title":"Forget a broken connection","label":"Forget locally","group":"Saved connection","description":"Recovery only, for revoked credentials or a lost OAuth client. Does not delete the device in Google Photos.","confirm":{"title":"Forget locally without deleting the Google device?","message":"Erase local credentials even if Google is unreachable? Remove the old device manually in Google Photos. A new pairing creates a new device.","confirmLabel":"Forget locally"}}
+  ]
+}

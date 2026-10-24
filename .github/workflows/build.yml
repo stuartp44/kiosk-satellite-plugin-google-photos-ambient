@@ -1,0 +1,55 @@
+name: Build plugin
+on:
+  push:
+  pull_request:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || github.ref }}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '25'
+      - uses: android-actions/setup-android@v3
+      - run: sdkmanager "platforms;android-36" "build-tools;36.0.0"
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Test and package
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          if [ -n "$RELEASE_TAG" ]; then
+            ./gradlew --no-daemon build "-PpluginVersion=${RELEASE_TAG#v}"
+          else
+            ./gradlew --no-daemon build
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: google-photos-ambient
+          path: dist/*
+  publish:
+    if: github.event_name == 'release'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: google-photos-ambient
+          path: dist
+      - name: Upload verified release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/* --clobber
